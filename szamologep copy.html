@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        html {
+            font-size: .7rem;
+            box-sizing: border-box;
+        }
+        /*         
+        *,
+        *::before,
+        *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: inherit;
+        }
+         */
+        
+        .calculator-screen {
+            width: 95%;
+            font-size: 5rem;
+            height: 60px;
+            border: none;
+            color: black;
+            text-align: right;
+            /*       padding-right: 30px; */
+            /*         padding-left: 10px; */
+        }
+        
+        .calculator {
+            border: 1px solid #ccc;
+            border-radius: 3px;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 500px;
+        }
+        
+        button {
+            height: 60px;
+            /*      background-color: rgb(102, 22, 22); */
+            border-radius: 1px;
+            border: 2px solid #c4c4c4;
+            background-color: transparent;
+            font-size: 3rem;
+            color: #333;
+            background-image: linear-gradient(to bottom, transparent, transparent 50%, rgba(0, 0, 0, .04));
+            box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .05), inset 0 1px 0 0 rgba(255, 255, 255, .45), inset 0 -1px 0 0 rgba(255, 255, 255, .15), 0 1px 0 0 rgba(255, 255, 255, .15);
+            text-shadow: 0 2px rgba(255, 255, 255, .4);
+        }
+        
+        button:hover {
+            background-color: #eaeaea;
+        }
+        
+        .operator {
+            /*   color: #337cac; */
+            background-color: rgb(214, 212, 212);
+        }
+        
+        .equal {
+            /* a div melyik sorban kezdodik */
+            grid-row-start: 2;
+            /* a div melyik sorban vegzodik */
+            grid-row-end: 6;
+            /* a div melyik oszlopban kezdodik */
+            grid-column-start: 4;
+            /* a div melyik oszlopban vegzodik */
+            grid-column-end: 4;
+            background-color: #477ada;
+            color: #fff;
+            height: 100%;
+        }
+        
+        .equal:hover {
+            background-color: #103d5e;
+        }
+        
+        .calculator-keys {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            grid-gap: 20px;
+            padding: 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="calculator">
+
+        <input type="text" class="calculator-screen" value="0" disabled/>
+
+        <div class="calculator-keys">
+
+            <button type="button" class="operator plus" value="+">+</button>
+            <button type="button" class="operator minus" value="-">-</button>
+            <button type="button" class="operator times" value="*">&times;</button>
+            <button type="button" class="operator divide" value="/">&divide;</button>
+
+            <button type="button" class='number n7' value="7">7</button>
+            <button type="button" class='number n8' value="8">8</button>
+            <button type="button" class='number n9' value="9">9</button>
+
+
+            <button type="button" class='number n4' value="4">4</button>
+            <button type="button" class='number n5' value="5">5</button>
+            <button type="button" class='number n6' value="6">6</button>
+
+
+            <button type="button" class='number n1' value="1">1</button>
+            <button type="button" class='number n2' value="2">2</button>
+            <button type="button" class='number n3' value="3">3</button>
+
+
+            <button type="button" class='number n0' value="0">0</button>
+            <button type="button" class="dot" value=".">.</button>
+            <button type="button" class="clean" value="clean">C</button>
+
+            <button type="button" class="equal" value="=">=</button>
+
+        </div>
+    </div>
+    <script>
+        const plus = document.querySelector('.plus');
+        const minus = document.querySelector('.minus');
+        const times = document.querySelector('.times');
+        const divide = document.querySelector('.divide');
+        const dot = document.querySelector('.dot');
+        const clean = document.querySelector('.clean');
+        const equal = document.querySelector('.equal');
+
+        const n0 = document.querySelector('.n0');
+        const n1 = document.querySelector('.n1');
+        const n2 = document.querySelector('.n2');
+        const n3 = document.querySelector('.n3');
+        const n4 = document.querySelector('.n4');
+        const n5 = document.querySelector('.n5');
+        const n6 = document.querySelector('.n6');
+        const n7 = document.querySelector('.n7');
+        const n8 = document.querySelector('.n8');
+        const n9 = document.querySelector('.n9');
+
+        buttons = document.querySelectorAll('.calculator-keys>button');
+
+        let lcdKijelzo = document.querySelector('.calculator-screen');
+
+        const sum = (a, b) => a + b;
+        const sub = (a, b) => a - b;
+        const multi = (a, b) => a * b;
+        const div = (a, b) => a / b;
+
+        let numberArray = [];
+        let operatorArray = [];
+
+
+        /* minden gombhoz hozzaadom a click esemeny figyeleset */
+        /* az esemeny bekovetkezesekor meghivatom a handleClick fuggvenyt */
+        const clickEventListener = () => {
+            document.querySelectorAll('.calculator-keys>button').forEach(item => {
+                item.addEventListener('click', handleClick);
+            });
+        };
+
+
+        /* GOMBNYOMASKOR EZ TORTENIK*/
+        const handleClick = (event) => {
+            /*  console.log(event.target); */
+
+            /* C gomb lenyomasakor */
+            if (event.target.value === 'clean') {
+                pressedCKey();
+
+                /* szam nyomasakor a numberArray tombbe tegye bele az adott szamot */
+                /* muveletijel nyomasakor a operatorArray tombbe tegye bele az adott muveletijelet */
+            } else if (event.target.classList[0] === 'number') {
+                pressedNumberKey();
+            } else if ((event.target.classList[0] === 'operator')) {
+                pressedOperationKey();
+            } else
+                pressedEqualKey();
+        }
+
+        /* SEGEDFUGGVENY - C gomb megnyomasa eseten fut le */
+        function pressedCKey() {
+            /*  console.log('c gombot nyomtak'); */
+            lcdKijelzo.value = 0;
+            numberArray = [];
+            operatorArray = [];
+            console.log(operatorArray, numberArray);
+        };
+
+        /* SEGEDFUGGVENY - szam gomb megnyomasa eseten fut le */
+        function pressedNumberKey() {
+            let acc = [];
+            do {
+                acc.push(event.target.value);
+
+            } while (event.target.classList[0] === 'number');
+        }
+
+        /* SEGEDFUGGVENY - szam gomb megnyomasa eseten fut le */
+        function pressedNumberKeyOri() {
+            numberArray.push(event.target.value);
+            lcdKijelzo.value += event.target.value;
+            console.log(numberArray);
+        }
+        /* SEGEDFUGGVENY - muveletijel gomb megnyomasa eseten fut le */
+        function pressedOperationKey() {
+            operatorArray.push(event.target.value);
+            lcdKijelzo.value += event.target.value;
+            console.log(operatorArray);
+        }
+
+        /* SEGEDFUGGVENY -  = jel megnyomasa eseten fut le */
+        function pressedEqualKey() {
+            console.log('el kell vegezni a muveleteket');
+            checkArrayElements();
+
+        }
+
+        /* SEGEDFUGGVENY - ellenorzi hogy a szamok es muveleti jelek szama stimmel-e */
+        function checkArrayElements() {
+            if (numberArray.length !== operatorArray.length + 1) {
+                lcdKijelzo.value = 'Hiba!';
+
+            }
+
+        }
+
+        /* A kattintas figyeleset meghivjuk */
+        clickEventListener();
+    </script>
+</body>
+
+</html>
