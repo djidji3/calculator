@@ -134,6 +134,8 @@
         const clean = document.querySelector('.clean');
         const equal = document.querySelector('.equal');
 
+        const operatorButtons = document.querySelectorAll('.operator');
+
         const n0 = document.querySelector('.n0');
         const n1 = document.querySelector('.n1');
         const n2 = document.querySelector('.n2');
@@ -145,20 +147,24 @@
         const n8 = document.querySelector('.n8');
         const n9 = document.querySelector('.n9');
 
+        const numberButtons = document.querySelectorAll('.number');
+
         buttons = document.querySelectorAll('.calculator-keys>button');
 
         let lcdKijelzo = document.querySelector('.calculator-screen');
 
-        const sum = (a, b) => a + b;
-        const sub = (a, b) => a - b;
-        const multi = (a, b) => a * b;
-        const div = (a, b) => a / b;
-
+        /* szamokat tarolo tomb */
         let numberArray = [];
+        /* muveleti jelet tarolo tomb */
         let operatorArray = [];
+        /* az acc valtozo tarolja ideglenesen a beutott szamokat-addig amig a vegeleges szam nem all rendelkezesre  */
+        let acc = '';
+        /* az operationSign tarolja ideiglenesen a beutott muveleti jelet -addig amig egy ujabb muveleti jel lenyomasra kerul */
+        let operationSign = '';
+        /* ket szamon elvegzett muvelet eredmenyet tarolja */
+        let result;
 
-
-        /* minden gombhoz hozzaadom a click esemeny figyeleset */
+        /* GOMB LENYOMASA ESEMENY FIGYELESE minden gombnal */
         /* az esemeny bekovetkezesekor meghivatom a handleClick fuggvenyt */
         const clickEventListener = () => {
             document.querySelectorAll('.calculator-keys>button').forEach(item => {
@@ -169,20 +175,26 @@
 
         /* GOMBNYOMASKOR EZ TORTENIK*/
         const handleClick = (event) => {
-            console.log(event.target);
-
-            /* C gomb lenyomasakor */
+            /* C gomb lenyomasakor  ezt csinald*/
             if (event.target.value === 'clean') {
                 pressedCKey();
+                console.log('C gombot nyomtad');
+                console.log(event.target);
 
-                /* szam nyomasakor a numberArray tombbe tegye bele az adott szamot */
-                /* muveletijel nyomasakor a operatorArray tombbe tegye bele az adott muveletijelet */
+                /* szam gomb lenyomasakor ezt csinald */
             } else if (event.target.classList[0] === 'number') {
-                pressedNumberKey();
-            } else if ((event.target.classList[0] === 'operator')) {
-                pressedOperationKey();
-            } else
-                pressedEqualKey();
+                console.log('number gomb:', event.target.value);
+                pressedNumberKey(event);
+
+                /* muveleti jel lenyomasakor ezt csinald */
+            } else if (event.target.classList[0] === 'operator') {
+                console.log('operator gomb:', event.target.value);
+                pressedOperationKey(event)
+
+                /* egyenlosegjel lenyomasakor ezt csinald */
+            } else if (event.target === equal) {
+                console.log('egyenloseg jel:', event.target.value);
+            };
         }
 
         /* SEGEDFUGGVENY - C gomb megnyomasa eseten fut le */
@@ -196,33 +208,134 @@
 
 
         /* SEGEDFUGGVENY - szam gomb megnyomasa eseten fut le */
-        function pressedNumberKey() {
-            numberArray.push(event.target.value);
-            lcdKijelzo.value += event.target.value;
-            console.log(numberArray);
-        }
+        function pressedNumberKey(event) {
+            console.log('esemeny.cel.ertek:', event.target.value);
+            acc += event.target.value;
+            console.log('acc erteke: ', acc);
+            lcdKijelzo.value = acc;
+        };
+
         /* SEGEDFUGGVENY - muveletijel gomb megnyomasa eseten fut le */
-        function pressedOperationKey() {
-            operatorArray.push(event.target.value);
-            lcdKijelzo.value += event.target.value;
-            console.log(operatorArray);
-        }
+        function pressedOperationKey(event) {
+            checkAccStatus();
+            cleaningAcc();
+            uploadOperationSign(event);
+            doOperationTask(numberArray[0], numberArray[1], operatorArray[0]);
+            cleaningOperationSign();
+            /* uploadPressedKeyToOperationSign(event); */
+            /*   checkOperationTask(); */
+            doOperationTask(numberArray[0], numberArray[1], operatorArray[0]);
+        };
 
         /* SEGEDFUGGVENY -  = jel megnyomasa eseten fut le */
         function pressedEqualKey() {
             console.log('el kell vegezni a muveleteket');
             checkArrayElements();
 
-        }
+        };
+
+        /* SEGEDFUGGVENY - ha az acc valtozoban van e vmi, akkor feltolti a szam tombbe a tartalmat*/
+        function checkAccStatus() {
+            if (acc != '') {
+                numberArray.push(acc);
+                console.log('numericArray erteke:', numberArray);
+            }
+        };
+
+
+        /* SEGEDFUGGVENY - kiuriti az acc tartalmat */
+        function cleaningAcc() {
+            acc = '';
+            console.log('acc kiuritve. Tartalma: ', acc);
+        };
+
+        /* SEGEDFUGGVENY -  muveletijel valtozo tartalmat feltolti a muveleti tombbe */
+        function uploadOperationSign(event) {
+            if (operationSign != '') {
+                console.log('operationSing nem ures jelenleg: ', operationSign);
+                operatorArray.push(operationSign);
+                console.log('operatorArray tartalma: ', operatorArray);
+            } else {
+                operationSign = event.target.value;
+                console.log('operationSing ures volt,de bele kerult a lenyomaott muveletijel : ', operationSign);
+            };
+        };
+
+        /* SEGEDFUGGVENY - kiuriti a muveleti jel tartalmat */
+        function cleaningOperationSign() {
+            operatorArray.push(operationSign);
+            console.log('operatorArray tartalma: ', operatorArray);
+            operationSign = '';
+            console.log('operationSing kiuritesre kerult : ', operationSign);
+        };
+
+        /*         /* SEGEDFUGGVENY - a leutott muveleti jelet beleteszi a muveleti jel valtozoba */
+        function uploadPressedKeyToOperationSign(event) {
+            operationSign = event.target.value;
+            console.log('operationSing erteke a leutott jel erteke lett : ', operationSign);
+        };
+
+        /* SEGEDFUGGVENY - ellenorzi hogy vegezheto-e szamitas. Meg vannak-e az operandusok es az operator */
+        /*   function checkOperationTask() {
+              if (numberArray[0] && numberArray[1] && operatorArray[0] != '') {
+                  return true;
+              }
+          }; */
+
+        /* SEGEDFUGGVENY - elvegzi a szamitasi feladatokat */
+        function doOperationTask(number1, number2, operationSign) {
+            if (number1 && number2 && operationSign != '') {
+                console.log('minden rendelkezesre all a szamitashoz', number1, operationSign, number2, );
+                /*  let result; */
+                if (operationSign === '+') {
+                    result = parseInt(number1) + parseInt(number2);
+                    console.log(result);
+
+                } else if (operationSign === '-') {
+                    result = parseInt(number1) - parseInt(number2);
+                    console.log(result);
+                } else if (operationSign === '*') {
+                    result = parseInt(number1) * parseInt(number2);
+                    console.log(result);
+                } else if (operationSign === '/') {
+                    result = parseInt(number1) / parseInt(number2);
+                    console.log(result);
+                }
+                showResultOnDisplay(result);
+                cleanArrays();
+                uploadResultToNumberArray();
+            }
+        };
+
+        /* SEGEDFUGGVENY - megjeleniti a kijelzon az eredmenyt */
+        function showResultOnDisplay(result) {
+            lcdKijelzo.value = result;
+            console.log('kijelzon ez kellene hogy megjelenjen', result);
+        };
+
+        /* SEGEDFUGGVENY - tombok kiuritese*/
+        function cleanArrays() {
+            console.log('a result tartalma jelenleg: ', result);
+            numberArray = [];
+            operatorArray = [];
+            console.log('tombok kiuritve, tartalmuk: ', numberArray, operatorArray);
+            numberArray = result;
+            console.log('numberArraybe belekerult az eredmeny a tovabbszamolas lehetosege miatt: ', numberArray);
+        };
+
+        /* SEGEDFUGGVENY - eredmeny feltoltolese szamtomb 0. elemebe*/
+        function uploadResultToNumberArray() {
+            console.log('result tipusa', typeof result, 'result erteke: ', result);
+            numberArray[0] = result;
+            console.log('numberArray tartama: ', numberArray);
+        };
 
         /* SEGEDFUGGVENY - ellenorzi hogy a szamok es muveleti jelek szama stimmel-e */
-        function checkArrayElements() {
-            if (numberArray.length !== operatorArray.length + 1) {
-                lcdKijelzo.value = 'Hiba!';
-
-            }
-
-        }
+        /*         function checkArrayElements() {
+                    if (numberArray.length !== operatorArray.length + 1) {
+                        lcdKijelzo.value = 'Hiba!';
+                    }
+                }; */
 
         /* A kattintas figyeleset meghivjuk */
         clickEventListener();
