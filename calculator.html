@@ -104,7 +104,7 @@
 <body>
     <div class="calculator">
 
-        <input type="text" class="calculator-screen-small" disabled/>
+        <input type="text" class="calculator-screen-small" value='0' disabled/>
         <input type="text" class="calculator-screen" value="0" disabled/>
 
         <div class="calculator-keys">
@@ -234,9 +234,9 @@
         /* SEGEDFUGGVENY - szam gomb megnyomasa eseten fut le */
         function pressedNumberKey(event) {
             refreshLcdKijelzo(event);
-
-            console.log('esemeny.cel.ertek:', event.target.value);
+            console.log('event.target.value:', event.target.value);
             acc += event.target.value;
+            lcdKijelzo.value=acc;
             console.log('acc erteke: ', acc);
         };
 
@@ -289,7 +289,8 @@
 
         /* SEGEDFUGGVENY - kiuriti a muveleti jel tartalmat */
         function cleaningOperationSign() {
-            operatorArray.push(operationSign);
+           /*  operatorArray.push(operationSign); */
+           operatorArray[0] = operationSign;
             console.log('operatorArray tartalma: ', operatorArray);
             operationSign = '';
             console.log('operationSing kiuritesre kerult : ', operationSign);
@@ -354,7 +355,7 @@
         };
 
         function refreshLcdKijelzo(event) {
-            lcdKijelzo.value += event.target.value;
+            lcdKijelzo.value = event.target.value;
             console.log('kijelzon ez kellene hogy megjelenjen', event.target.value);
         };
 
