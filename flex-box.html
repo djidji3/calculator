@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        .flexbox-container {
+            /* maga a container mindig flex */
+            display: flex;
+            /* zsugoritsa az elemeket ha keves a hely vagy tegye egymas ala  */
+            /* nowrap=ne tegye egymas ala,azaz zsugoritsa */
+            flex-wrap: nowrap;
+            /* fix magassagu a container */
+            height: 800px;
+            /* X tengelyen  merre igazitsa a tartalmat */
+            /* space-between= elossza a helyet az elemek kozott */
+            justify-content: space-around;
+            /* Y tengelyen merre igazitsa a tartalmat */
+            align-content: center;
+            /* minden elemet a containerben,fuggoleges merre igazitson */
+            align-items: flex-end;
+            background-color: yellow;
+            flex-direction: row;
+            min-height: 400px;
+            align-content: center;
+        }
+        
+        .flexbox-item {
+            background-color: gray;
+            width: 200px;
+            margin: 10px;
+            border: 3px solid black;
+        }
+        
+        .flexbox-item-1 {
+            height: 50px;
+            /* az elem zsugoridik-e ha kevesebb a hely 1=zsugoridi*/
+            flex-shrink: 0;
+            /* a rugalmas elem kezdeti merete */
+            flex-basis: 120px;
+            flex-grow: 1;
+        }
+        
+        .flexbox-item-2 {
+            min-height: 100px;
+            /* az elem novekedik-e. flex-grow:1=novekedik az eredeti ketszeresere */
+            flex-grow: 0;
+            /* az adott elemet fuggolegesen hova igazitson */
+            align-self: normal;
+            flex-shrink: 1;
+        }
+        
+        .flexbox-item-3 {
+            height: 550px;
+            /* az elem hanyad reszere zsugoridik a tobbihez kepest, ha csokken a hely. 0=nem */
+            flex-shrink: 3;
+            align-content: flex-end;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="flexbox-container">
+        <div class="flexbox-item flexbox-item-1">Flexbox Item 1</div>
+        <div class="flexbox-item flexbox-item-2">Flexbox Item 2</div>
+        <div class="flexbox-item flexbox-item-3">Flexbox Item 3 Lorem ipsum, dolor sit amet consectetur adipisicing elit. Voluptate, aspernatur in dolorum nobis natus aut neque sunt omnis fugit totam, minus molestiae quia aliquam unde labore sit quisquam laboriosam. Dolore.</div>
+    </div>
+
+
+</body>
+
+</html>
