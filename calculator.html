@@ -198,7 +198,7 @@
             } else if (event.target.classList[0] === 'number') {
                 console.log('number gomb:', event.target.value);
                 pressedNumberKey(event);
-
+2
                 /* muveleti jel lenyomasakor ezt csinald */
             } else if (event.target.classList[0] === 'operator') {
                 console.log('operator gomb:', event.target.value);
@@ -242,7 +242,7 @@
 
         /* SEGEDFUGGVENY - muveletijel gomb megnyomasa eseten fut le */
         function pressedOperationKey(event) {
-            refreshLcdKijelzo(event);
+           /*  refreshLcdKijelzo(event); */
             refreshSmallLcdKijelzo(event);
             checkAccStatusAndUpload();
             cleaningAcc();
